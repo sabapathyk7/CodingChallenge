@@ -12,10 +12,7 @@ import RxCocoa
 
 final class LoginViewController: UIViewController {
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view.
-    }
+    private var viewModel: LoginViewModel
 
     private lazy var headerLabel: UILabel = {
         let headerLabel = UILabel()
@@ -39,7 +36,7 @@ final class LoginViewController: UIViewController {
         return textField
     }()
     
-    private lazy var confirmButton: UIButton = {
+    private lazy var loginButton: UIButton = {
         let button = UIButton()
 
         button.setTitle("Login", for: .normal)
@@ -63,7 +60,52 @@ final class LoginViewController: UIViewController {
     }()
     
     private let disposeBag = DisposeBag()
+    
+    init(viewModel: LoginViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view.
+        
+        
+    }
 }
 
+extension LoginViewController: UISetupableType {
+    func setupUI() {
+        
+        view.backgroundColor = .systemTeal
+        
+        navigationItem.title = viewModel.navigationTitle
+        
+        stackView.addArrangedSubview(headerLabel)
+        stackView.addArrangedSubview(usernameTextField)
+        stackView.addArrangedSubview(passwordTextField)
+        stackView.addArrangedSubview(loginButton)
+        
+        view.addSubview(stackView)
+        
+        NSLayoutConstraint.activate([
+            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -60),
+            stackView.widthAnchor.constraint(equalTo: view.layoutMarginsGuide.widthAnchor, multiplier: 1, constant: -100),
+        ])
+        
+    }
+}
+
+extension LoginViewController {
+    
+    func bindViewModel() {
+    
+    }
+}
 
 
