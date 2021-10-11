@@ -73,12 +73,15 @@ final class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        setupUI()
         
+        bindViewModel()
         
     }
 }
 
 extension LoginViewController: UISetupableType {
+    
     func setupUI() {
         
         view.backgroundColor = .systemTeal
@@ -104,7 +107,13 @@ extension LoginViewController: UISetupableType {
 extension LoginViewController {
     
     func bindViewModel() {
-    
+        let outputs = viewModel.configure(input: LoginViewModel.Input(username: usernameTextField.rx.text.orEmpty.asObservable(), password: passwordTextField.rx.text.orEmpty.asObservable()))
+
+        outputs.isLoginAllowed.drive(loginButton.rx.isEnabled).disposed(by: disposeBag)
+
+        loginButton.rx.tap.throttle(.seconds(1), scheduler: MainScheduler.instance).bind {
+            debugPrint("Submit")
+        }.disposed(by: disposeBag)
     }
 }
 

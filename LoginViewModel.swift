@@ -19,11 +19,14 @@ final class LoginViewModel: UnidirectionalViewModelType {
     }
     
     struct Output: OutputType {
-        let isLoginAllowed: Bool
+        let isLoginAllowed: Driver<Bool>
     }
     
     func configure(input: Input) -> Output {
-        return Output(isLoginAllowed: false)
+        let isLoginAllowed = Observable.combineLatest(input.username, input.password) { (username, password) in
+            return !username.isEmpty && !password.isEmpty
+        }.asDriver(onErrorJustReturn: false)
+        return Output(isLoginAllowed: isLoginAllowed)
     }
     
 }
