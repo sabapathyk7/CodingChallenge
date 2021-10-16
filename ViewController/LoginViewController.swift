@@ -12,7 +12,7 @@ import RxCocoa
 
 final class LoginViewController: UIViewController {
 
-    private var viewModel: LoginViewModel
+    private var loginViewModel: LoginViewModel
 
     private lazy var headerLabel: UILabel = {
         let headerLabel = UILabel()
@@ -62,7 +62,7 @@ final class LoginViewController: UIViewController {
     private let disposeBag = DisposeBag()
     
     init(viewModel: LoginViewModel) {
-        self.viewModel = viewModel
+        self.loginViewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -78,6 +78,14 @@ final class LoginViewController: UIViewController {
         bindViewModel()
         
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        setupFields()
+    }
 }
 
 extension LoginViewController: UISetupableType {
@@ -86,7 +94,7 @@ extension LoginViewController: UISetupableType {
         
         view.backgroundColor = .systemTeal
         
-        navigationItem.title = viewModel.navigationTitle
+        navigationItem.title = loginViewModel.navigationTitle
         
         stackView.addArrangedSubview(headerLabel)
         stackView.addArrangedSubview(usernameTextField)
@@ -102,19 +110,35 @@ extension LoginViewController: UISetupableType {
         ])
         
     }
+    
+    func setupFields(){
+        usernameTextField.text = ""
+        passwordTextField.text = ""
+    }
 }
 
 extension LoginViewController {
     
     func bindViewModel() {
-        let outputs = viewModel.configure(input: LoginViewModel.Input(username: usernameTextField.rx.text.orEmpty.asObservable(), password: passwordTextField.rx.text.orEmpty.asObservable()))
-
-        outputs.isLoginAllowed.drive(loginButton.rx.isEnabled).disposed(by: disposeBag)
-
-        loginButton.rx.tap.throttle(.seconds(1), scheduler: MainScheduler.instance).bind {
-            debugPrint("Submit")
-        }.disposed(by: disposeBag)
+//        let outputs = viewModel.configure(input: LoginViewModel.Input(username: usernameTextField.rx.text.orEmpty.asObservable(), password: passwordTextField.rx.text.orEmpty.asObservable()))
+//
+//        outputs.isLoginAllowed.drive(loginButton.rx.isEnabled).disposed(by: disposeBag)
+//
+//        loginButton.rx.tap.throttle(.seconds(1), scheduler: MainScheduler.instance).bind {
+//            debugPrint("Submit")
+//        }.disposed(by: disposeBag)
+        
+        let output = loginViewModel.transform(LoginViewModel.Input(
+                                                username: usernameTextField.rx.text.orEmpty.asObservable(),
+                                                password: passwordTextField.rx.text.orEmpty.asObservable(),
+                                                loginButton: loginButton.rx.tap.asObservable()))
+        output.isLoginAllowed.drive(loginButton.rx.isEnabled).disposed(by: disposeBag)
+        output.loginSuccessful.drive(onNext: goToMainScreen).disposed(by: disposeBag)
+    }
+    
+    private func goToMainScreen() {
+        
+        let mainVC = MainViewController()
+        self.navigationController?.pushViewController(mainVC, animated: true)
     }
 }
-
-

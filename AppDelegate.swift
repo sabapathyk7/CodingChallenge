@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let navigationViewController = UINavigationController(rootViewController: loginViewController)
 
         let appearance = UINavigationBarAppearance()
-        appearance.backgroundColor = .blue
+        appearance.backgroundColor = .systemYellow
         appearance.largeTitleTextAttributes = [
             NSAttributedString.Key.font: UIFont.italicSystemFont(ofSize: 30)
         ]
@@ -43,7 +43,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.makeKeyAndVisible()
         return true
     }
-
-
 }
 

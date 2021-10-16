@@ -12,8 +12,9 @@ protocol InputType {}
 protocol OutputType {}
 
 protocol UnidirectionalViewModelType: ViewModelType {
+    
     associatedtype Input: InputType
     associatedtype Output: OutputType
 
-    func configure(input: Input) -> Output
+    func transform(_ input: Input) -> Output
 }
